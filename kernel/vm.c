@@ -437,3 +437,37 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
     return -1;
   }
 }
+// Lab 3.2:递归打印pagetable
+void
+vmprint_dfs(pagetable_t pagetable,int level)
+{
+  for(int i = 0; i < 512; i++){
+    pte_t pte = pagetable[i];
+    if ((pte & PTE_V) && (pte & (PTE_R | PTE_W | PTE_X)) == 0) {
+      // pte指向的是下一级page table的地址
+      uint64 child = PTE2PA(pte); // 下一级pte的物理地址
+      // 根据level打印树深
+      for (int j=0; j <= level; j++) {
+        printf("..");
+        if ((j+1) <= level) {
+          printf(" ");
+        }
+      }
+      printf("%d: pte %p pa %p\n", i, pte, child);
+      vmprint_dfs((pagetable_t)child, level+1);
+    }else if (pte & PTE_V) {
+      uint64 child = PTE2PA(pte);
+      // 最低级的PTE,直接打印相关内容
+      printf(".. .. ..%d: pte %p pa %p\n", i, pte, child);
+    }
+
+  }
+}
+
+// Lab 3.2:定义vmprint(p->pagetable)函数
+void
+vmprint(pagetable_t pagetable)
+{
+  printf("page table %p\n",pagetable);
+  vmprint_dfs(pagetable, 0);
+}
