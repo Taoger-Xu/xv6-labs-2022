@@ -104,4 +104,6 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  // Lab3:定义struct结构体用来存放pid
+  struct usyscall *usyscall;
 };
