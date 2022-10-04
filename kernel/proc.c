@@ -708,3 +708,26 @@ procdump(void)
     printf("\n");
   }
 }
+
+int
+pgaccess(void *start, int len, void *bitmask)
+{
+  struct proc *p = myproc();
+  if (p == 0){
+    return -1;
+  }
+  pagetable_t pagetable = p->pagetable;
+  int ans = 0;
+  // 依次检查每一个page
+  for(int i = 0; i < len; i++){
+    pte_t *pte;
+    //((uint64)pg) + (uint64)PGSIZE * i
+    pte = walk(pagetable, (uint64)start + (uint64)PGSIZE * i, 0);
+    if (pte !=0 &&((*pte) & PTE_A)){
+      ans |= (1 << i);
+      *pte ^= PTE_A;
+    }
+  }
+   // copyout
+  return copyout(pagetable, (uint64)bitmask, (char *)&ans, sizeof(ans));
+}

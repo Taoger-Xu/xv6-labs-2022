@@ -53,8 +53,6 @@ sys_sleep(void)
 {
   int n;
   uint ticks0;
-
-
   argint(0, &n);
   acquire(&tickslock);
   ticks0 = ticks;
@@ -69,13 +67,23 @@ sys_sleep(void)
   return 0;
 }
 
-
+// Lab3.3:pgaccess()系统调用的实现
 #ifdef LAB_PGTBL
 int
 sys_pgaccess(void)
 {
   // lab pgtbl: your code here.
-  return 0;
+
+  uint64 uva_addr; //参数一，需要检查用户空间va的addrress
+  int len; // 参数二，需要检查的page页数
+  uint64 bitmask; // 参数三，最后检查结果需要存放的地址，也是用户的va的address
+
+  //接受参数并且检查
+  argaddr(0, &uva_addr);
+  argint(1, &len);
+  argaddr(2, &bitmask);
+  
+  return pgaccess((void*)uva_addr, len, (void*)bitmask);
 }
 #endif
 

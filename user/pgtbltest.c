@@ -61,6 +61,8 @@ pgaccess_test()
   buf[PGSIZE * 1] += 1;
   buf[PGSIZE * 2] += 1;
   buf[PGSIZE * 30] += 1;
+  // 调试信息
+  printf("adits is:%x\n",abits);
   if (pgaccess(buf, 32, &abits) < 0)
     err("pgaccess failed");
   if (abits != ((1 << 1) | (1 << 2) | (1 << 30)))
